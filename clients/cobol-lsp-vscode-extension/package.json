@@ -396,6 +396,7 @@
                     "items": {
                         "type": "string",
                         "enum": [
+                            "DaCo",
                             "IDMS"
                         ]
                     },

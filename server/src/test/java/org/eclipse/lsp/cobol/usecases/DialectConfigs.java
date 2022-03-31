@@ -17,6 +17,7 @@ package org.eclipse.lsp.cobol.usecases;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
+import org.eclipse.lsp.cobol.core.engine.dialects.daco.DaCoDialect;
 import org.eclipse.lsp.cobol.core.engine.dialects.idms.IdmsDialect;
 import org.eclipse.lsp.cobol.service.AnalysisConfig;
 import org.eclipse.lsp.cobol.service.CopybookConfig;
@@ -25,11 +26,18 @@ import org.eclipse.lsp.cobol.service.SQLBackend;
 
 /** IDMS related getter */
 @UtilityClass
-public class IdmsBase {
-  AnalysisConfig getAnalysisConfig() {
+public class DialectConfigs {
+  AnalysisConfig getIDMSAnalysisConfig() {
     return new AnalysisConfig(
         ImmutableSet.of(),
         new CopybookConfig(CopybookProcessingMode.DISABLED, SQLBackend.DATACOM_SERVER),
         ImmutableList.of(IdmsDialect.NAME));
+  }
+
+  AnalysisConfig getDaCoAnalysisConfig() {
+    return new AnalysisConfig(
+        ImmutableSet.of(),
+        new CopybookConfig(CopybookProcessingMode.DISABLED, SQLBackend.DATACOM_SERVER),
+        ImmutableList.of(DaCoDialect.NAME, IdmsDialect.NAME));
   }
 }
