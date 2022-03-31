@@ -70,10 +70,9 @@ public class QualifiedReferenceNode extends Node {
         .map(ProgramNode.class::cast)
         .map(programNode -> programNode.getVariableDefinition(variableUsageNodes))
         .orElseGet(ImmutableList::of);
-    if (foundDefinitions.size() == 1) {
-      VariableNode definitionNode = foundDefinitions.get(0);
+    for (VariableNode definitionNode: foundDefinitions) {
       variableDefinitionNode = definitionNode;
-      for (VariableUsageNode usageNode: variableUsageNodes) {
+      for (VariableUsageNode usageNode : variableUsageNodes) {
         while (definitionNode != null && !usageNode.getName().equals(definitionNode.getName())) {
           definitionNode = definitionNode.getNearestParentByType(NodeType.VARIABLE)
               .map(VariableNode.class::cast)
@@ -86,18 +85,20 @@ public class QualifiedReferenceNode extends Node {
         }
         definitionNode.addUsage(usageNode);
       }
-      return ImmutableList.of();
     }
-    String dataName = variableUsageNodes.get(0).getName();
-    SyntaxError error = SyntaxError.syntaxError()
-        .severity(ErrorSeverity.ERROR)
-        .locality(getLocality())
-        .messageTemplate(MessageTemplate.of(
-            foundDefinitions.isEmpty() ? NOT_DEFINED_ERROR : DUPLICATED_DEFINITION_ERROR,
-            dataName
-        ))
-        .build();
-    LOG.debug("Syntax error by QualifiedReferenceNode " + error.toString());
-    return ImmutableList.of(error);
+    if (foundDefinitions.size() > 1) {
+      String dataName = variableUsageNodes.get(0).getName();
+      SyntaxError error = SyntaxError.syntaxError()
+          .severity(ErrorSeverity.ERROR)
+          .locality(getLocality())
+          .messageTemplate(MessageTemplate.of(
+              foundDefinitions.isEmpty() ? NOT_DEFINED_ERROR : DUPLICATED_DEFINITION_ERROR,
+              dataName
+          ))
+          .build();
+      LOG.debug("Syntax error by QualifiedReferenceNode " + error.toString());
+      return ImmutableList.of(error);
+    }
+    return ImmutableList.of();
   }
 }
